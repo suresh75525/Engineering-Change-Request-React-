@@ -1,0 +1,10 @@
+.table-container {
+    overflow-x: auto; 
+    max-width: 100%; 
+  }
+  
+  @media screen and (max-width: 768px) {
+    .table-container {
+      max-height: 400px; 
+    }
+  }
