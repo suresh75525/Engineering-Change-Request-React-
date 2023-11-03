@@ -113,8 +113,9 @@ const TimePlan = (props) => {
     // setLt2Value({});
     // setLt1Value({});
     Timeplnretdata &&
+      Timeplnretdata !== null &&
       Timeplnretdata.map((data, i) => {
-        timetabledata.map((data1, j) => {
+        [...Array(Timeplnretdata.length)].map((data1, j) => {
           // const index = j + 1;
           if (i === j) {
             setChampionValue((prevValues) => ({
@@ -146,7 +147,7 @@ const TimePlan = (props) => {
   const handleDateChange = (key, dataIndex, date) => {
     TimeTabhandleDateChange(key, dataIndex, date, Timeplnretdata);
   };
-
+  console.log("----updated", timetabledata)
   const handleDelete = (key) => {
     const newData = timetabledata.filter((item) => item.key !== key);
     handleTimedata(newData);
@@ -268,60 +269,7 @@ const TimePlan = (props) => {
         </LocalizationProvider>
       ),
     },
-    // {
-    //   title: "LT",
-    //   dataIndex: "lt1",
-    //   editable: false,
-    //   align: "center",
-    //   width: "4%",
-    //   // render: (_, record) => {
-    //   //   const startDateLT1 = moment(record.planstart);
-    //   //   const endDateLT1 = moment(record.planend);
-    //   //   const diffInDaysLT1 = endDateLT1.diff(startDateLT1, "days");
-    //   //   return (
-    //   //     <>
-    //   //       {diffInDaysLT1 > 0 ? (
-    //   //         <Box
-    //   //           sx={{ fontWeight: "bold", color: "green", fontSize: "20px" }}
-    //   //         >
-    //   //           {diffInDaysLT1}
-    //   //         </Box>
-    //   //       ) : diffInDaysLT1 === 0 ? (
-    //   //         <Box
-    //   //           sx={{ fontWeight: "bold", color: "black", fontSize: "20px" }}
-    //   //         >
-    //   //           {diffInDaysLT1}
-    //   //         </Box>
-    //   //       ) : (
-    //   //         <Box sx={{ fontWeight: "bold", color: "red", fontSize: "20px" }}>
-    //   //           {diffInDaysLT1}
-    //   //         </Box>
-    //   //       )}
-    //   //     </>
-    //   //   );
-    //   // },
-    //   render: (_, record) => (
-    //     <TextField
-    //       sx={{
-    //         backgroundColor: "white",
-    //         "& .MuiInputBase-input": {
-    //           height: "2px",
-    //           width: 40,
-    //         },
-    //         pointerEvents: Change_Imp === 2 ? "none" : "",
-    //       }}
-    //       placeholder="Type LT here..."
-    //       value={lt1Value[record.key] || ""}
-    //       onBlur={(e) => handleCellChange(record.key, "lt1", e.target.value)}
-    //       onChange={(e) =>
-    //         setLt1Value((prevVal) => ({
-    //           ...prevVal,
-    //           [record.key]: e.target.value,
-    //         }))
-    //       }
-    //     />
-    //   ),
-    // },
+   
     {
       title: "Actual Start",
       dataIndex: "actualstart",
@@ -384,62 +332,7 @@ const TimePlan = (props) => {
         </LocalizationProvider>
       ),
     },
-    // {
-    //   title: "LT",
-    //   dataIndex: "lt2",
-    //   editable: false,
-    //   align: "center",
-    //   width: "4%",
-    //   // render: (_, record) => {
-    //   //   const startDate = moment(record.actualstart);
-    //   //   const endDate = moment(record.actualend);
-    //   //   const diffInDays = endDate.diff(startDate, "days");
-    //   //   let ltColor, ltText;
-    //   //   if (diffInDays > 0) {
-    //   //     ltColor = "green";
-    //   //     ltText = diffInDays;
-    //   //     // handleCellChange(record.key,"lt2",diffInDays)
-    //   //   } else if (diffInDays === 0) {
-    //   //     ltColor = "black";
-    //   //     ltText = diffInDays;
-    //   //     // handleCellChange(record.key,"lt2",diffInDays)
-    //   //   } else {
-    //   //     ltColor = "red";
-    //   //     ltText = diffInDays;
-    //   //     // handleCellChange(record.key,"lt2",diffInDays)
-    //   //   }
-    //   //   setLt2Value((prevVal) => ({
-    //   //     ...prevVal,
-    //   //     [record.key]: ltText,
-    //   //   }))
-    //   //   return (
-    //   //     <Box sx={{ fontWeight: "bold", color: ltColor, fontSize: "20px" }}>
-    //   //       {ltText}
-    //   //     </Box>
-    //   //   );
-    //   // },
-    //   render: (_, record) => (
-    //     <TextField
-    //       sx={{
-    //         backgroundColor: "white",
-    //         "& .MuiInputBase-input": {
-    //           height: "2px",
-    //           width: 40,
-    //         },
-    //         pointerEvents: Change_Imp === 2 ? "none" : "",
-    //       }}
-    //       placeholder="Type LT here..."
-    //       value={lt2Value[record.key] || ""}
-    //       onBlur={(e) => handleCellChange(record.key, "lt2", e.target.value)}
-    //       onChange={(e) =>
-    //         setLt2Value((prevVal) => ({
-    //           ...prevVal,
-    //           [record.key]: e.target.value,
-    //         }))
-    //       }
-    //     />
-    //   ),
-    // },
+    
     {
       title: "Champion",
       dataIndex: "champion",
@@ -495,11 +388,11 @@ const TimePlan = (props) => {
     const newData = {
       key: count,
       activity: "",
-      planstart: moment(newDate).format("YYYY-MM-DD"),
-      planend: moment(newDate).format("YYYY-MM-DD"),
+      planstart: "",
+      planend: "",
       // lt1: "",
-      actualstart: moment(newDate).format("YYYY-MM-DD"),
-      actualend: moment(newDate).format("YYYY-MM-DD"),
+      actualstart: "",
+      actualend: "",
       // lt2: "",
       champion: "",
     };

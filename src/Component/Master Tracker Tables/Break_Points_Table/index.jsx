@@ -8,8 +8,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 const BreakPointTable = (props) => {
   const {
     ischecked,
-    handleCellBrkPnttab = () => {},
-    handleDateBrkPnttab = () => {},
+    handleCellBrkPnttab = () => { },
+    handleDateBrkPnttab = () => { },
     brkpntdata,
     BrkPntretdata,
     Change_Imp,
@@ -17,10 +17,12 @@ const BreakPointTable = (props) => {
 
   const [remarkValue, setremarkValue] = useState({});
   const [championValue, setchampionValue] = useState({});
+  const [disabledIndices, setDisabledIndices] = useState([]);
 
   useEffect(() => {
     setchampionValue({});
     setremarkValue({});
+    const newDisabledIndices = [];
     BrkPntretdata &&
       BrkPntretdata.map((data, i) => {
         brkpntdata.map((data1, j) => {
@@ -34,13 +36,17 @@ const BreakPointTable = (props) => {
               ...prevValues,
               [index]: data.Remark,
             }));
+            newDisabledIndices.push(index);
+
           }
         });
         return;
       });
+      setDisabledIndices(newDisabledIndices);
   }, [ischecked, BrkPntretdata]);
 
   const handleCellChange = (key, dataIndex, value, BrkPntretdata) => {
+    value === false ? (setremarkValue({}), setchampionValue({})) : ""
     handleCellBrkPnttab(key, dataIndex, value, BrkPntretdata);
   };
   const handleDateChange = (key, dataIndex, value, BrkPntretdata) => {
@@ -67,11 +73,12 @@ const BreakPointTable = (props) => {
       dataIndex: "applicable",
       align: "center",
       width: 70,
-      render: (_, record) => (
+      render: (_, record, index) => (
         <FormControlLabel
           sx={{
             ml: 2,
           }}
+          disabled={disabledIndices.includes(++index)}
           onChange={(e) =>
             handleCellChange(record.key, "applicable", e.target.checked)
           }

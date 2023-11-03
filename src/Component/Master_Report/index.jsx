@@ -22,6 +22,9 @@ import ReactFileReader from "react-file-reader";
 import Paper from "@mui/material/Paper";
 import moment from "moment";
 import { styled } from "@mui/material/styles";
+import wrongimg from './t1.png';
+import trueimg from './t2.png';
+import notapp from './notapp.png';
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 import { app_style } from "./style";
@@ -35,19 +38,11 @@ import TimePlan from "../Master Tracker Tables/Time_Plan_Table";
 import ChangeImpTable from "../Master Tracker Tables/Change_Implementation";
 import BreakPointTable from "../Master Tracker Tables/Break_Points_Table";
 import { INITIAL_STATE, postReducer } from "../../reducers/postReducer";
+import Base64Downloader from "common-base64-downloader-react";
 import { ACTION_TYPES } from "../../reducers/postActionType";
 
-const modalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 700,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
+
+
 const Item = styled(Paper)(({ theme }) => ({
   boxShadow: "none",
   ...theme.typography.body2,
@@ -59,9 +54,9 @@ const Item = styled(Paper)(({ theme }) => ({
 const MasterReportDetail = (props) => {
   const {
     reportDetail,
-    handleClickBack = () => {},
+    handleClickBack = () => { },
     tabArr,
-    handleEcostatus = () => {},
+    handleEcostatus = () => { },
     ecorecord,
   } = props;
 
@@ -121,6 +116,8 @@ const MasterReportDetail = (props) => {
   const [Timeplnretdata, SetTimeplnretdata] = useState([]);
   const [affretdata, Setaffretdata] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [viewtaskdata, setViewTaskdata] = useState("");
+  const [selecteddept, setSelectedDept] = useState(null)
   const [state, dispatch] = useReducer(postReducer, INITIAL_STATE);
   const [taskstate, TaskStatus] = useReducer(postReducer, INITIAL_STATE);
   const ECRApprovestatus =
@@ -130,7 +127,582 @@ const MasterReportDetail = (props) => {
 
   const ecorecfield =
     ecorecord.length > 0 && ecorecord[5].length > 0 ? ecorecord[5][0] : null;
+  const feasbltydata = viewtaskdata.length > 0 ? viewtaskdata[0] : null;
+  const riskappdata = viewtaskdata.length > 0 ? viewtaskdata[1] : null;
+  const rankdata = viewtaskdata.length > 0 ? viewtaskdata[2] : null;
+  const remarkdata = viewtaskdata.length > 0 ? viewtaskdata[3] : null;
 
+  const quesobj = [
+    {
+      id: 1,
+      question: "Is product adequately defined application requirements, etc. to enable feasibility evaluation?",
+      ans: feasbltydata && feasbltydata.length > 0 ? feasbltydata[0].col1 : "",
+    },
+    {
+      id: 2,
+      question: "Can Engineering Performance Specifications be met as written?",
+      ans: feasbltydata && feasbltydata.length > 0 ? feasbltydata[0].col2 : "",
+    },
+    {
+      id: 3,
+      question: "Can product be manufactured to tolerances specified on drawing?",
+      ans: feasbltydata && feasbltydata.length > 0 ? feasbltydata[0].col3 : "",
+    },
+    {
+      id: 4,
+      question: "Can product be manufactured with process capability that meet requirements?",
+      ans: feasbltydata && feasbltydata.length > 0 ? feasbltydata[0].col4 : "",
+    },
+    {
+      id: 5,
+      question: "Is there adequate capacity to produce product?",
+      ans: feasbltydata && feasbltydata.length > 0 ? feasbltydata[0].col5 : "",
+    },
+    {
+      id: 6,
+      question: "Does the design allow the use of efficient material handling techniques?",
+      ans: feasbltydata && feasbltydata.length > 0 ? feasbltydata[0].col6 : "",
+    },
+    {
+      id: 7,
+      question: "Is statistical process control required on the product?",
+      ans: feasbltydata && feasbltydata.length > 0 ? feasbltydata[0].col7 : "",
+    },
+    {
+      id: 8,
+      question: "Is statistical process control presently used on similar products?",
+      ans: feasbltydata && feasbltydata.length > 0 ? feasbltydata[0].col8 : "",
+    },
+    {
+      id: 9,
+      question: "Costs for capital equipment?",
+      ans: feasbltydata && feasbltydata.length > 0 ? feasbltydata[0].col9 : "",
+    },
+    {
+      id: 10,
+      question: "Costs for tooling?",
+      ans: feasbltydata && feasbltydata.length > 0 ? feasbltydata[0].col10 : "",
+    },
+    {
+      id: 11,
+      question: "Alternative manufacturing methods?",
+      ans: feasbltydata && feasbltydata.length > 0 ? feasbltydata[0].col11 : "",
+    },
+    {
+      id: 12,
+      question: "Are the processes in control and stable?",
+      ans: feasbltydata && feasbltydata.length > 0 ? feasbltydata[0].col12 : "",
+    },
+    {
+      id: 13,
+      question: "Does process capability meet customer requirements?",
+      ans: feasbltydata && feasbltydata.length > 0 ? feasbltydata[0].col12 : "",
+    }
+  ]
+  const purchaseonj = [
+    {
+      id: 1,
+      question: "New supplier needs to be explored / developed",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col1 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col1 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col1 : ""
+    },
+    {
+      id: 2,
+      question: "Skill set required for Part development",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col2 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col2 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col2 : ""
+    },
+    {
+      id: 3,
+      question: "New/complex technology",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col3 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col3 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col3 : ""
+    },
+    {
+      id: 4,
+      question: "Capex investment",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col4 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col4 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col4 : ""
+    },
+    {
+      id: 5,
+      question: "New material - customer approval required",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col5 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col5 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col5 : ""
+    },
+    {
+      id: 6,
+      question: "RM cost / direct import",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col6 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col6 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col6 : ""
+    },
+    {
+      id: 7,
+      question: "Not easily avaliable",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col7 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col7 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col7 : ""
+    },
+    {
+      id: 8,
+      question: "Shortage of Material",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col8 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col8 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col8 : ""
+    },
+    {
+      id: 9,
+      question: "Change in Logistics",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col9 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col9 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col9 : ""
+    },
+    {
+      id: 10,
+      question: "Affects productivity / flow of material",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col10 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col10 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col10 : ""
+    }
+  ]
+  const programManagementobj = [
+    {
+      id: 1,
+      question: "Any special skills required to CFT",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col1 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col1 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col1 : ""
+    },
+    {
+      id: 2,
+      question: "Any training required to CFT",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col2 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col2 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col2 : ""
+    },
+    {
+      id: 3,
+      question: "Any additional manpower required to manage the changes",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col3 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col3 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col3 : ""
+    },
+    {
+      id: 4,
+      question: "New/complex technology (Hardware / software)",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col4 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col4 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col4 : ""
+    },
+    {
+      id: 5,
+      question: "Capex investment / Collaborator inputs required to do change",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col5 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col5 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col5 : ""
+    },
+    {
+      id: 6,
+      question: "New material used",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col6 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col6 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col6 : ""
+    },
+    {
+      id: 7,
+      question: "Any IMDS concern / Hazardous materials in BOM",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col7 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col7 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col7 : ""
+    },
+    {
+      id: 8,
+      question: "New Validation method needs to be devised",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col8 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col8 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col8 : ""
+    },
+    {
+      id: 9,
+      question: "Review or change required in DFMEA / PFMEA",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col9 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col9 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col9 : ""
+    },
+    {
+      id: 10,
+      question: "Completely new design feature / design need",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col10 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col10 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col10 : ""
+    },
+  ]
+  const Engineeringobj = [
+    {
+      id: 1,
+      question: "Skill set required for design / upgradation",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col1 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col1 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col1 : ""
+    },
+    {
+      id: 2,
+      question: "Training required for Design engineer",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col2 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col2 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col2 : ""
+    },
+    {
+      id: 3,
+      question: "Addition of man power to do design change",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col3 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col3 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col3 : ""
+    },
+    {
+      id: 4,
+      question: "New/complex technology (Hardware / software)",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col4 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col4 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col4 : ""
+    },
+    {
+      id: 5,
+      question: "Capex investment / Collaborator inputs required to do change",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col5 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col5 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col5 : ""
+    },
+    {
+      id: 6,
+      question: "New material used",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col6 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col6 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col6 : ""
+    },
+    {
+      id: 7,
+      question: "Material severely affects other product Design chara",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col7 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col7 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col7 : ""
+    },
+    {
+      id: 8,
+      question: "New Validation method needs to be devised",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col8 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col8 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col8 : ""
+    },
+    {
+      id: 9,
+      question: "Review or change required in DFMEA",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col9 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col9 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col9 : ""
+    },
+    {
+      id: 10,
+      question: "Completely new design feature / design need",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col10 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col10 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col10 : ""
+    }
+  ];
+  const qualityobj = [
+    {
+      id: 1,
+      question: "Skill to operate a special measuring eqpt",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col1 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col1 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col1 : ""
+    },
+    {
+      id: 2,
+      question: "Training required to Inspectors",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col2 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col2 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col2 : ""
+    },
+    {
+      id: 3,
+      question: "Addition of man power",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col3 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col3 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col3 : ""
+    },
+    {
+      id: 4,
+      question: "New / complex technology for measurement/ eqp",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col4 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col4 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col4 : ""
+    },
+    {
+      id: 5,
+      question: "Investment in Lab / inspection facility",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col5 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col5 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col5 : ""
+    },
+    {
+      id: 6,
+      question: "Validation / testing required",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col6 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col6 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col6 : ""
+    },
+    {
+      id: 7,
+      question: "New matl - Customer validation / approval required",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col7 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col7 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col7 : ""
+    },
+    {
+      id: 8,
+      question: "Affecting process chara",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col8 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col8 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col8 : ""
+    },
+    {
+      id: 9,
+      question: "Method of measurement not known",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col9 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col9 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col9 : ""
+    },
+    {
+      id: 10,
+      question: "Effects human safety / fatigue / Product safety (CC) chara",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col10 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col10 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col10 : ""
+    },
+    {
+      id: 11,
+      question: "Effects productivity / efficiency of inspection",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col11 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col11 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col11 : ""
+    }
+  ]
+  const Manufacturingobj = [
+    {
+      id: 1,
+      question: "Skill required to operate",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col1 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col1 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col1 : ""
+    },
+    {
+      id: 2,
+      question: "Training required for Operator",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col2 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col2 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col2 : ""
+    },
+    {
+      id: 3,
+      question: "Addition of man power",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col3 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col3 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col3 : ""
+    },
+    {
+      id: 4,
+      question: "New tool/ jigs/ fixtures reqd",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col4 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col4 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col4 : ""
+    },
+    {
+      id: 5,
+      question: "Capex investment",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col5 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col5 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col5 : ""
+    },
+    {
+      id: 6,
+      question: "Change in layout",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col6 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col6 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col6 : ""
+    },
+    {
+      id: 7,
+      question: "Affecting safety chara",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col7 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col7 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col7 : ""
+    },
+    {
+      id: 8,
+      question: "New material - process / tooling validation reqd",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col8 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col8 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col8 : ""
+    },
+    {
+      id: 9,
+      question: "Affecting process parameters",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col9 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col9 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col9 : ""
+    },
+    {
+      id: 10,
+      question: "Change in process flow",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col10 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col10 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col10 : ""
+    },
+    {
+      id: 11,
+      question: "Affects human safety/ fatigue / ergonomics",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col11 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col11 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col11 : ""
+    },
+    {
+      id: 12,
+      question: "Affects productivity",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col12 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col12 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col12 : ""
+    }
+  ]
+  const SDEobj = [
+    {
+      id: 1,
+      question: "New supplier needs to be explored / developed",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col1 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col1 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col1 : ""
+    },
+    {
+      id: 2,
+      question: "Skill set required for Part development",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col2 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col2 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col2 : ""
+    },
+    {
+      id: 3,
+      question: "New/complex technology",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col3 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col3 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col3 : ""
+    },
+    {
+      id: 4,
+      question: "Capex investment",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col4 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col4 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col4 : ""
+    },
+    {
+      id: 5,
+      question: "New material - customer approval required",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col5 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col5 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col5 : ""
+    },
+    {
+      id: 6,
+      question: "Not easily avaliable",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col6 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col6 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col6 : ""
+    },
+    {
+      id: 7,
+      question: "Shortage of Material",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col7 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col7 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col7 : ""
+    },
+    {
+      id: 8,
+      question: "Complex process",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col8 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col8 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col8 : ""
+    },
+    {
+      id: 9,
+      question: "Affects productivity / flow of material",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col9 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col9 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col9 : ""
+    }
+  ]
+  const Productionobj = [
+    {
+      id: 1,
+      question: "High skill required",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col1 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col1 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col1 : ""
+    },
+    {
+      id: 2,
+      question: "NA",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col2 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col2 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col2 : ""
+    },
+    {
+      id: 3,
+      question: "NA",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col3 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col3 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col3 : ""
+    },
+    {
+      id: 4,
+      question: "NA",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col4 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col4 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col4 : ""
+    },
+    {
+      id: 5,
+      question: "NA",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col5 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col5 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col5 : ""
+    },
+    {
+      id: 6,
+      question: "NA",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col6 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col6 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col6 : ""
+    },
+    {
+      id: 7,
+      question: "Complex process",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col7 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col7 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col7 : ""
+    },
+    {
+      id: 8,
+      question: "Affects productivity",
+      ans: riskappdata && riskappdata.length > 0 ? riskappdata[0].col8 : "",
+      ans1: rankdata && rankdata.length > 0 ? rankdata[0].col8 : "",
+      ans2: remarkdata && remarkdata.length > 0 ? remarkdata[0].col8 : ""
+    },
+  ]
   const [customer, SetCustomer] = useState(false);
   const [supplier, SetSupplier] = useState(false);
   const [magna, SetMagna] = useState(false);
@@ -147,6 +719,20 @@ const MasterReportDetail = (props) => {
 
   const [tableVal, setTableVal] = useState([]);
   const [tableData, setTableData] = useState(false);
+
+  const [modalCode, setModalcode] = useState(0);
+  const commondeptobj = selecteddept !== null && selecteddept === "D0002" ? Engineeringobj : selecteddept === "D0004" ? qualityobj : selecteddept === "D0005" ? purchaseonj : selecteddept === "D0006" ? SDEobj : selecteddept === "D0001" ? Manufacturingobj : selecteddept === "D0003" ? Productionobj : programManagementobj;
+  const modalStyle = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: modalCode === 1 ? 1600 : 700,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+  };
 
   const getDateDiffInDays = (day1, day2) => {
     const diffInMs = Math.abs(day1 - day2);
@@ -264,7 +850,7 @@ const MasterReportDetail = (props) => {
       remark: "",
       status: "",
       champion: "",
-      function: "",
+      func: "",
     };
   });
   // moment(newDate).format("YYYY-MM-DD")
@@ -274,14 +860,21 @@ const MasterReportDetail = (props) => {
       document: documentobj[index].value,
     };
   });
+  // const feasibledaa = feasbltydata && feasbltydata.length > 0 && feasbltydata.map((res,i) => {
+  //     console.log(`col`+`${++i}`)
+  //   // return res[`col`+`${++i}`]
+  //   return;
+  // })
 
   const handleChangeCusname = (id) => (e) => {
     SetChecklist((prevData) =>
       prevData.map((item) => {
         if (item.id === id) {
+          // if(filemnger.length > 0)
           return {
             ...item,
             cusname: e.target.value,
+            status: item.picture > 0 ? "updated" : "inserted"
           };
         }
         return item;
@@ -297,18 +890,39 @@ const MasterReportDetail = (props) => {
               ...item,
               check: event.target.checked,
               filename: "",
+              cusname: "",
+              status: ""
             };
           }
-          return {
-            ...item,
-            check: event.target.checked,
-          };
+         else if (event.target.checked === true && item.picture === "" && item.status === "deleted") {
+            return {
+              ...item,
+              check: event.target.checked,
+              filename: "",
+              status: "inserted"
+            };
+          }
+          else if (event.target.checked === true && filemnger.length > 0 && item.picture !== "") {
+            return {
+              ...item,
+              check: event.target.checked,
+              filename: "",
+              status: "updated"
+            };
+          }
+          else {
+            return {
+              ...item,
+              check: event.target.checked,
+              status: "inserted"
+            };
+          }
         }
         return item;
       })
     );
   };
-  console.log("---handlecusnamae", checklst);
+  console.log(checklst, "---checklst")
   //timtable
   const [timetabledata, setTimeTabledata] = useState([
     {
@@ -323,6 +937,8 @@ const MasterReportDetail = (props) => {
       champion: "",
     },
   ]);
+
+  console.log(timetabledata, "----timetabledata")
 
   const initiateTimetab = () => {
     setTimeTabledata([
@@ -350,6 +966,7 @@ const MasterReportDetail = (props) => {
             filename: filname,
             picture: files.base64.toString(),
             type: type[1],
+            status: item.picture !== "" ? "updated" : "inserted"
           };
         }
         return item;
@@ -464,15 +1081,37 @@ const MasterReportDetail = (props) => {
 
   const handleCellBrkPnttab = (key, dataIndex, value, isret) => {
     setBrkPntdata((prevData) =>
-      prevData.map((item) =>
-        item.key === key
-          ? {
+      prevData.map((item) => {
+        if (item.key === key) {
+          if (isret !== null && value === false && item.applicable === true) {
+            return {
               ...item,
+              actualDate: "",
+              remark: "",
+              rec: "delete",
+              isEdited: "true",
+              champion: "",
               [dataIndex]: value,
-              ...(isret !== null ? { isEdited: "true" } : {}),
-            }
-          : item
-      )
+            };
+          } else if (isret !== null && item.isEdited === "false") {
+            return {
+              ...item,
+              rec: "update",
+              isEdited: "true",
+              [dataIndex]: value,
+            };
+          } else {
+            return {
+              ...item,
+              rec: "insert",
+              isEdited: "true",
+              [dataIndex]: value,
+            };
+          }
+        } else {
+          return item;
+        }
+      })
     );
   };
   const handleDateBrkPnttab = (key, dataIndex, value, isret) => {
@@ -480,10 +1119,13 @@ const MasterReportDetail = (props) => {
       prevData.map((item) =>
         item.key === key
           ? {
-              ...item,
-              [dataIndex]: moment(value.$d).format("YYYY-MM-DD"),
-              ...(isret !== null ? { isEdited: "true" } : {}),
-            }
+            // ...item,
+            // [dataIndex]: moment(value.$d).format("YYYY-MM-DD"),
+            // ...(isret !== null ? { isEdited: "true" } : {}),
+            ...item,
+            ...(isret !== null && item.isEdited === "false" ? { rec: "update", isEdited: "true" } : { rec: "insert" }),
+            [dataIndex]: moment(value.$d).format("YYYY-MM-DD"),
+          }
           : item
       )
     );
@@ -500,53 +1142,104 @@ const MasterReportDetail = (props) => {
   const AfftabRetrRec = () => {
     if (affretdata) {
       if (affretdata.length > 0) {
-        const newdata = affretdata.map((record, index) => {
-          let tardate = record.Target_Date.split("T");
-          let actdate = record.Actual_Date.split("T");
-          return {
-            key: index,
-            document: record.Document,
-            applicable: record.Applicable === 1 ? true : false,
-            champion: record.Champion,
-            func: record.Function,
-            targetDate: tardate[0],
-            actualDate: actdate[0],
-            status: record.Status,
-            remark: record.Remark,
-            isEdited: "false",
-            ID: record.ID,
-            Mst_Id: record.Mst_Id,
-          };
+        affretdata.map((record, index) => {
+          setAffTableData((prevVal) =>
+            prevVal.map((item) => {
+              if (record.Document === item.document) {
+                let tardate = record.Target_Date ? record.Target_Date.split("T") : "";
+                let actdate = record.Actual_Date ? record.Actual_Date.split("T") : ""
+                return {
+                  // ...record,
+                  key: index,
+                  document: record.Document,
+                  applicable: record.Applicable === 1 ? true : false,
+                  champion: record.Champion,
+                  func: record.Func,
+                  targetDate: record.Target_Date ? tardate[0] : "",
+                  actualDate: record.Actual_Date ? actdate[0] : "",
+                  status: record.Status,
+                  remark: record.Remark,
+                  isEdited: "false",
+                  rec: "",
+                  ID: record.ID,
+                  Mst_Id: record.Mst_Id,
+                };
+              }
+              return item;
+            })
+          )
+
         });
-        setAffTableData(newdata);
+        // setAffTableData(newdata);
       }
     }
   };
 
+  // const AffTabhandleCellChange = (key, dataIndex, value, isret) => {
+  //   console.log("isret----", isret)
+  //   setAffTableData((prevData) =>
+  //     prevData.map(
+  //       (item) =>
+  //         item.key === key
+  //           ? {
+  //             ...item,
+  //             // ...(isret !== null && value === false && item.applicable === true ? { rec: "podaa" } : isret !== null && item.isEdited === "false" ? { rec: "update", isEdited: "true" } : { rec: "insert" }),
+
+  //             [dataIndex]: value,
+  //           }
+  //           : item
+  //     )
+  //   );
+  // };
   const AffTabhandleCellChange = (key, dataIndex, value, isret) => {
     setAffTableData((prevData) =>
-      prevData.map(
-        (item) =>
-          item.key === key
-            ? {
-                ...item,
-                [dataIndex]: value,
-                ...(isret !== null ? { isEdited: "true" } : {}),
-              }
-            : item
-      )
+      prevData.map((item) => {
+        if (item.key === key) {
+          if (isret !== null && value === false && item.applicable === true) {
+            return {
+              ...item,
+              actualDate: "",
+              targetDate: "",
+              remark: "",
+              status: "",
+              rec: "delete",
+              isEdited: "true",
+              func: "",
+              champion: "",
+              [dataIndex]: value,
+            };
+          } else if (isret !== null && item.isEdited === "false") {
+            return {
+              ...item,
+              rec: "update",
+              isEdited: "true",
+              [dataIndex]: value,
+            };
+          } else {
+            return {
+              ...item,
+              rec: "insert",
+              isEdited: "true",
+              [dataIndex]: value,
+            };
+          }
+        } else {
+          return item;
+        }
+      })
     );
   };
+
 
   const AffTabhandleDateChange = (key, dataIndex, value, isret) => {
     setAffTableData((prevData) =>
       prevData.map((item) =>
         item.key === key
           ? {
-              ...item,
-              [dataIndex]: moment(value.$d).format("YYYY-MM-DD"),
-              ...(isret !== null ? { isEdited: "true" } : {}),
-            }
+            ...item,
+            ...(isret !== null && item.isEdited === "false" ? { rec: "update", isEdited: "true" } : { rec: "insert" }),
+            [dataIndex]: moment(value.$d).format("YYYY-MM-DD"),
+          }
           : item
       )
     );
@@ -557,10 +1250,10 @@ const MasterReportDetail = (props) => {
       prevData.map((item) =>
         item.key === key
           ? {
-              ...item,
-              [dataIndex]: value,
-              ...(isret !== null ? { isEdited: "true" } : {}),
-            }
+            ...item,
+            [dataIndex]: value,
+            ...(isret !== null ? { isEdited: "true" } : {}),
+          }
           : item
       )
     );
@@ -571,10 +1264,10 @@ const MasterReportDetail = (props) => {
       prevData.map((item) =>
         item.key === key
           ? {
-              ...item,
-              [dataIndex]: moment(date.$d).format("YYYY-MM-DD"),
-              ...(isret !== null ? { isEdited: "true" } : {}),
-            }
+            ...item,
+            [dataIndex]: moment(date.$d).format("YYYY-MM-DD"),
+            ...(isret !== null ? { isEdited: "true" } : {}),
+          }
           : item
       )
     );
@@ -582,15 +1275,37 @@ const MasterReportDetail = (props) => {
 
   const handleCellChangeImptab = (key, dataIndex, value, isret) => {
     setChngeImpData((prevData) =>
-      prevData.map((item) =>
-        item.key === key
-          ? {
+      prevData.map((item) => {
+        if (item.key === key) {
+          if (isret !== null && value === false && item.applicable === true) {
+            return {
               ...item,
+              actualDate: "",
+              remark: "",
+              rec: "delete",
+              isEdited: "true",
+              champion: "",
               [dataIndex]: value,
-              ...(isret !== null ? { isEdited: "true" } : {}),
-            }
-          : item
-      )
+            };
+          } else if (isret !== null && item.isEdited === "false") {
+            return {
+              ...item,
+              rec: "update",
+              isEdited: "true",
+              [dataIndex]: value,
+            };
+          } else {
+            return {
+              ...item,
+              rec: "insert",
+              isEdited: "true",
+              [dataIndex]: value,
+            };
+          }
+        } else {
+          return item;
+        }
+      })
     );
   };
 
@@ -599,10 +1314,13 @@ const MasterReportDetail = (props) => {
       prevData.map((item) =>
         item.key === key
           ? {
-              ...item,
-              [dataIndex]: moment(value.$d).format("YYYY-MM-DD"),
-              ...(isret !== null ? { isEdited: "true" } : {}),
-            }
+            // ...item,
+            // [dataIndex]: moment(value.$d).format("YYYY-MM-DD"),
+            // ...(isret !== null ? { isEdited: "true" } : {}),
+            ...item,
+            ...(isret !== null && item.isEdited === "false" ? { rec: "update", isEdited: "true" } : { rec: "insert" }),
+            [dataIndex]: moment(value.$d).format("YYYY-MM-DD"),
+          }
           : item
       )
     );
@@ -671,11 +1389,18 @@ const MasterReportDetail = (props) => {
   };
   const handleOpenModal = (type) => {
     if (type === 0) {
+      setModalcode(2);
       setBase64Image(beforePic);
       setOpen(true);
-    } else {
+
+    } else if (type === 1) {
+      setModalcode(2);
       setBase64Image(afterPic);
       setOpen(true);
+    } else {
+      setModalcode(1);
+      setOpen(true)
+
     }
   };
 
@@ -905,7 +1630,8 @@ const MasterReportDetail = (props) => {
     Setfilemnger(
       ecorecord.length > 0 && ecorecord[6].length > 0 ? ecorecord[6] : null
     );
-    const updatedChecklistObj = checklistobj.map((checklistItem) => {
+
+    checklistobj.map((checklistItem) => {
       const matchingFileManagerItem =
         filemnger &&
         filemnger.find(
@@ -930,16 +1656,19 @@ const MasterReportDetail = (props) => {
         if (matchingFileManagerItem) {
           return {
             ...item,
+            mstid: matchingFileManagerItem.Mst_id,
+            id:matchingFileManagerItem.ID,
             filename: matchingFileManagerItem.File_Name,
             picture: matchingFileManagerItem.picture,
             cusname: matchingFileManagerItem[chklst],
             check: matchingFileManagerItem[chklst] !== "" ? true : false,
+            status: "retrieve"
           };
         }
         return item;
       })
     );
-    // console.log("-----updatedChecklistObj", updatedChecklistObj);
+
     SetQuote(
       ecorecord.length > 0 && ecorecord[5].length > 0
         ? ecorecord[5][0].Quote_CFT
@@ -1003,15 +1732,17 @@ const MasterReportDetail = (props) => {
           prevVal.map((item) => {
             // let champ = item.champion;
             if (item.key === index) {
-              const actdate = data.Actual_Date.split("T");
+              const actdate = data.Actual_Date !== null ? data.Actual_Date.split("T") : null;
               return {
                 ...item,
                 champion: data.Champion,
                 remark: data.Remark,
-                actualDate: actdate[0],
+                actualDate: data.Actual_Date !== null ? actdate[0] : "-",
                 isEdited: "false",
+                rec: "",
                 ID: data.ID,
                 Mst_Id: data.Mst_Id,
+                applicable: data.Champion !== "" ? true : false,
               };
             }
             return item;
@@ -1027,53 +1758,64 @@ const MasterReportDetail = (props) => {
             // let champ = item.champion;
 
             if (item.key === index) {
-              const actdate = data.Actual_Date.split("T");
+              const actdate = data.Actual_Date !== null ? data.Actual_Date.split("T") : null;
               return {
                 ...item,
                 champion: data.Champion,
                 remark: data.Remark,
-                actualDate: actdate[0],
+                actualDate: data.Actual_Date !== null ? actdate[0] : "-",
                 isEdited: "false",
+                rec: "",
                 ID: data.ID,
                 Mst_Id: data.Mst_Id,
+                applicable: data.Champion !== "" ? true : false,
               };
             }
             return item;
           })
         );
       });
-    Timeplnretdata &&
-      Timeplnretdata.map((data, i) => {
-        // let index = i + 1;
-        setTimeTabledata((prevVal) =>
-          prevVal.map((item) => {
-            // let champ = item.champion;
-            // if (item.key === i) {
-            const plantdate1 = data.Plan_Start.split("T");
-            const plandate2 = data.Plan_End.split("T");
-            const actualdate1 = data.Actual_Start.split("T");
-            const actualdate2 = data.Actual_End.split("T");
-            return {
-              ...item,
-              ...Timeplnretdata,
-              activity: data.Activity,
-              planstart: plantdate1[0],
-              planend: plandate2[0],
-              lt1: data.LT1,
-              actualstart: actualdate1[0],
-              actualend: actualdate2[0],
-              lt2: data.LT2,
-              champion: data.Champion,
-              isEdited: "false",
-              ID: data.ID,
-              Mst_Id: data.Mst_Id,
-            };
-            // }
-            return item;
-          })
-        );
-      });
-
+    // Timeplnretdata &&
+    //   Timeplnretdata.map((data, i) => {
+    //     // let index = i + 1;
+    //     setTimeTabledata((prevVal) =>
+    //       [...Array(Timeplnretdata.length)].map((item) => {
+    //         // let champ = item.champion;
+    //         // if (item.key === i) {
+    //         const plantdate1 = data.Plan_Start.split("T");
+    //         const plandate2 = data.Plan_End.split("T");
+    //         const actualdate1 = data.Actual_Start.split("T");
+    //         const actualdate2 = data.Actual_End.split("T");
+    //         return {
+    //           ...data,
+    //           // ...Timeplnretdata,
+    //           activity: data.Activity,
+    //           planstart: plantdate1[0],
+    //           planend: plandate2[0],
+    //           // lt1: data.LT1,
+    //           actualstart: actualdate1[0],
+    //           actualend: actualdate2[0],
+    //           // lt2: data.LT2,
+    //           champion: data.Champion,
+    //           isEdited: "false",
+    //           ID: data.ID,
+    //           Mst_Id: data.Mst_Id,
+    //         };
+    //         // }
+    //         // return item;
+    //       })
+    //     );
+    //   });
+    const newTimetableData = Timeplnretdata && Timeplnretdata.map((item, index) => ({
+      key: index,
+      activity: item.Activity,
+      planstart: item.Plan_Start,
+      planend: item.Plan_End,
+      actualstart: item.Actual_Start,
+      actualend: item.Actual_End,
+      champion: item.Champion,
+    }));
+    newTimetableData ? setTimeTabledata(newTimetableData) : ""
     fetcthAssignedStatus();
     fetcthApprovedStatus();
   }, [reportDetail, ecorecfield, ecorecord, ChngeImpretdata]);
@@ -1118,9 +1860,7 @@ const MasterReportDetail = (props) => {
                   item.remark !== "" &&
                   item.status !== "" &&
                   item.champion !== "" &&
-                  item.func !== "" &&
-                  item.targetDate !== "" &&
-                  item.actualDate !== ""
+                  item.func !== ""
               );
             const chngeImpfildata = chngeImpdata.filter(
               (data) => data.applicable === true
@@ -1130,7 +1870,7 @@ const MasterReportDetail = (props) => {
               chngeImpfildata.length > 0 &&
               chngeImpfildata.every(
                 (item) =>
-                  item.remark !== "" && item.champion !== "" && item.actualDate
+                  item.remark !== "" && item.champion !== ""
               );
             const brkpntfildata = brkpntdata.filter(
               (data) => data.applicable === true
@@ -1139,7 +1879,7 @@ const MasterReportDetail = (props) => {
               brkpntfildata.length > 0 &&
               brkpntfildata.every(
                 (item) =>
-                  item.remark !== "" && item.champion !== "" && item.actualDate
+                  item.remark !== "" && item.champion !== ""
               );
             const chkfildata = checklst.filter((data) => data.check === true);
             const chklstdata =
@@ -1150,12 +1890,7 @@ const MasterReportDetail = (props) => {
               if (timetabledata.length > 0) {
                 const isValidTimeTabobj = timetabledata.every(
                   (item) =>
-                    item.activity !== "" &&
-                    item.champion !== "" &&
-                    item.planstart !== "" &&
-                    item.planend !== "" &&
-                    item.actualstart !== "" &&
-                    item.actualend !== ""
+                    (item.activity !== "" && item.champion !== "")
                 );
                 if (isValidTimeTabobj) {
                   if (isValidChngeimpObj && chngeImpfildata.length > 0) {
@@ -1176,10 +1911,7 @@ const MasterReportDetail = (props) => {
                           setIsLoading(true);
                           const formdata = new FormData();
                           let updmstid = ecorecfield && ecorecfield.ID;
-                          // let customerval = customer === true ? 1 : 0;
-                          // let supplierval = supplier === true ? 1 : 0;
-                          // let magnaval = magna === true ? 1 : 0;
-                          // let Transitval = Transit === true ? 1 : 0;
+
                           let date = reportDetail.Created_date;
                           let creadate = date.split("T");
                           formdata.append("ecrno", reportDetail.ecr_no);
@@ -1461,6 +2193,31 @@ const MasterReportDetail = (props) => {
       });
     }
   };
+
+  const handleViewTask = async (dept) => {
+    setSelectedDept(dept);
+    handleOpenModal(2)
+    const ecrno = reportDetail.ecr_no;
+    const formdata = new FormData();
+    formdata.append("ecrno", ecrno);
+    formdata.append("dept", dept)
+    await api
+      .post("api/getViewTask", formdata, {
+        "Content-Type": "text/plain",
+      })
+      .then((res) => {
+        if (res !== undefined && res !== null) {
+          const recordset = res.data;
+          if (recordset.success === true) {
+            if (recordset.data.length !== 0) {
+              setViewTaskdata(recordset.data);
+            }
+          }
+        }
+      })
+
+  }
+
   const handleUpdate = async () => {
     if (fqnoc.current.value !== "" && noc.current.value !== "") {
       // tableVal ---> insert
@@ -1498,34 +2255,89 @@ const MasterReportDetail = (props) => {
             affprog.current.value !== "" &&
             (productsafety !== false || legal !== false || statotory !== false)
           ) {
+            //update , delete and insert using filter...
             const updatedfilteredAfftabdata = AffTabledata.filter(
-              (item) => item.isEdited === "true"
+              (item) => item.isEdited === "true" && item.rec === "update"
             );
-
-            const isValidAffobj =
-              updatedfilteredAfftabdata.length > 0
-                ? updatedfilteredAfftabdata.every(
-                    (item) =>
-                      (item.applicable === true || item.applicable === false) &&
-                      item.remark !== "" &&
-                      item.status !== "" &&
-                      item.champion !== "" &&
-                      item.function !== ""
-                  )
-                : true;
+            const insertedfilterAfftabdata = AffTabledata.filter((item) => item.isEdited === "true" && item.rec === "insert")
+            const deletedfilterAfftabdata = AffTabledata.filter((item) => item.isEdited === "true" && item.rec === "delete" && item.applicable === false)
 
             const updatedfilteredchngeImpdata = chngeImpdata.filter(
-              (item) => item.isEdited === "true"
+              (item) => item.isEdited === "true" && item.rec === "update"
             );
-            const isValidChngeimpObj =
-              updatedfilteredchngeImpdata.length > 0
-                ? updatedfilteredchngeImpdata.every(
-                    (item) => item.remark !== "" && item.champion !== ""
-                  )
-                : true;
+            const insertedfilteredchngeImpdata = chngeImpdata.filter((item) => item.rec === "insert")
+            const deletedfilteredchngeImpdata = chngeImpdata.filter((item) => item.isEdited === "true" && item.rec === "delete" && item.applicable === false)
 
+            const updatedfilteredBrkPntdata = brkpntdata.filter(
+              (item) => item.isEdited === "true" && item.rec === "update"
+            );
+            const insertedfilteredBrkPntdata = brkpntdata.filter((item) => item.rec === "insert")
+            const deletedfilteredBrkPntdata = AffTabledata.filter((item) => item.isEdited === "true" && item.rec === "delete" && item.applicable === false)
+
+            //--------------
+            const isValidAffData = (data) => {
+              return data.every(
+                (item) =>
+                  (item.applicable === true || item.applicable === false) &&
+                  item.remark !== "" &&
+                  item.status !== "" &&
+                  item.champion !== "" &&
+                  item.func !== ""
+              );
+            };
+
+            const isValidData = (data) => {
+              return data.every(
+                (item) =>
+                  item.remark !== "" && item.champion !== ""
+              )
+            }
+
+            const isValidChngeImpobj = updatedfilteredchngeImpdata.length > 0
+              ? isValidData(updatedfilteredchngeImpdata)
+              : true;
+
+            const isValidinsChngeInsobj = insertedfilteredchngeImpdata.length > 0
+              ? isValidData(insertedfilteredchngeImpdata)
+              : true;
+
+            const isValidBrkPntobj = updatedfilteredBrkPntdata.length > 0
+              ? isValidData(updatedfilteredBrkPntdata)
+              : true;
+
+            const isValidinsBrkpntInsobj = insertedfilteredBrkPntdata.length > 0
+              ? isValidData(insertedfilteredBrkPntdata)
+              : true;
+
+            const isValidAffobj = updatedfilteredAfftabdata.length > 0
+              ? isValidAffData(updatedfilteredAfftabdata)
+              : true;
+
+            const isValidinsAffobj = insertedfilterAfftabdata.length > 0
+              ? isValidAffData(insertedfilterAfftabdata)
+              : true;
+              
+              const isValidChklstData = (data) => {
+                return data.every(
+                  (item) =>
+                  item.filename !== "" && item.cusname !== ""
+                );
+              };
+
+            const chkfilterupddata = checklst.filter((data) => data.check === true && data.status === "updated");
+            const chkfilterinsdata = checklst.filter((data) => data.check === true && data.status === "inserted");
+            // const chkdeldata = checklst.filter((data) => data.check === false && data.status === "deleted");
+            // const delmstid = chkdeldata && chkdeldata.length > 0 && chklstdata.map((res) => {
+            //   return res.mstid
+            // })
+            const chkupddata = chkfilterupddata.length > 0
+              ? isValidChklstData(chkfilterupddata)
+              : true;
+              const chkinsdata = chkfilterinsdata.length > 0
+              ? isValidChklstData(chkfilterinsdata)
+              : true;
             let insertTimetabrec = [];
-            if (isValidAffobj) {
+            if (isValidAffobj && isValidinsAffobj) {
               if (timetabledata.length !== Timeplnretdata.length) {
                 let remrow = timetabledata.length - Timeplnretdata.length;
                 insertTimetabrec = timetabledata.slice(-remrow);
@@ -1541,24 +2353,12 @@ const MasterReportDetail = (props) => {
                     (item) => item.activity !== "" && item.champion !== ""
                   );
                 if (isValidTimeTabobj && isValidTimeTabinsobj) {
-                  const updatedfilteredBrkpntdata = brkpntdata.filter(
-                    (item) => item.isEdited === "true"
-                  );
 
-                  const isValidBrkpntobj =
-                    updatedfilteredBrkpntdata.length > 0
-                      ? updatedfilteredBrkpntdata.every(
-                          (item) => item.remark !== "" && item.champion !== ""
-                        )
-                      : true;
-
-                  if (isValidChngeimpObj) {
-                    if (isValidBrkpntobj) {
+                  if (isValidChngeImpobj && isValidinsChngeInsobj) {
+                    if (isValidBrkPntobj && isValidinsBrkpntInsobj) {
                       if (
-                        (customer !== false ||
-                          supplier !== false ||
-                          magna !== false ||
-                          Transit !== false) &&
+                        chkupddata &&
+                        chkinsdata &&
                         (capYes !== false || capNo !== false) &&
                         (buildYes !== false || buildNo !== false) &&
                         (applicable !== false || notapplicable !== false)
@@ -1624,9 +2424,11 @@ const MasterReportDetail = (props) => {
                           }
 
                           formdata.append(
-                            "AffTabledata",
+                            "UpdAffTabledata",
                             JSON.stringify(updatedfilteredAfftabdata)
                           );
+                          formdata.append("InsAffTabledata", JSON.stringify(insertedfilterAfftabdata))
+
                           formdata.append(
                             "timetabledata",
                             JSON.stringify(timetabledata)
@@ -1635,10 +2437,16 @@ const MasterReportDetail = (props) => {
                             "chngeImpdata",
                             JSON.stringify(updatedfilteredchngeImpdata)
                           );
+                          formdata.append("InsChngeImpdata", JSON.stringify(insertedfilteredchngeImpdata))
                           formdata.append(
                             "brkpntdata",
-                            JSON.stringify(updatedfilteredBrkpntdata)
+                            JSON.stringify(updatedfilteredBrkPntdata)
                           );
+                          formdata.append("DelAffTabdata", JSON.stringify(deletedfilterAfftabdata))
+                          formdata.append("DelChngeImpdata", JSON.stringify(deletedfilteredchngeImpdata))
+                          formdata.append("InsBrkPntdata", JSON.stringify(insertedfilteredBrkPntdata))
+                          formdata.append("DelBrkPntdata", JSON.stringify(deletedfilteredBrkPntdata))
+                          // formdata.append("chklst", JSON.stringify(chklstdata));
                           formdata.append("customer", customerval);
                           formdata.append("supplier", supplierval);
                           formdata.append("magna", magnaval);
@@ -1680,7 +2488,8 @@ const MasterReportDetail = (props) => {
                             //in progress
                             formdata.append("changeimp", 0);
                           }
-
+                          formdata.append("chkupddata",JSON.stringify(chkfilterupddata));
+                          formdata.append("chkinsdata",JSON.stringify(chkfilterinsdata))
                           formdata.append("timingtar", timingtar);
                           formdata.append("costtar", costtar);
                           formdata.append("qualitytar", qualitytar);
@@ -2089,8 +2898,8 @@ const MasterReportDetail = (props) => {
                 <Box display="flex" alignItems="center">
                   <Typography sx={app_style.TextHeading}>Admin : </Typography>
                   {ECRApprovestatus === 1 ||
-                  ECRApprovestatus === 2 ||
-                  ECRApprovestatus === 5 ? (
+                    ECRApprovestatus === 2 ||
+                    ECRApprovestatus === 5 ? (
                     <>
                       <Badge status="success" text="Approved" />
                     </>
@@ -2171,8 +2980,8 @@ const MasterReportDetail = (props) => {
         </Card>
 
         {ECRApprovestatus === 1 ||
-        ECRApprovestatus === 2 ||
-        ECRApprovestatus === 5 ? (
+          ECRApprovestatus === 2 ||
+          ECRApprovestatus === 5 ? (
           <Box>
             <Box sx={{ mt: 2 }}>
               <Card raised={true} sx={app_style.cardSxT}>
@@ -2201,6 +3010,12 @@ const MasterReportDetail = (props) => {
                             <Badge status="error" text="Pending" />
                           </>
                         )}
+                        {ECRTaskStatus.engineering === 1 ?
+                          <Button sx={{ ml: 2 }} variant="contained" onClick={() => handleViewTask("D0002")}>View</Button>
+                          :
+                          <Button sx={{ ml: 2 }} variant="contained" onClick={() => handleViewTask("D0002")} disabled>View</Button>
+                        }
+
                       </Box>
                     </Grid>
                     <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
@@ -2217,6 +3032,13 @@ const MasterReportDetail = (props) => {
                             <Badge status="error" text="Pending" />
                           </>
                         )}
+                        {
+                          ECRTaskStatus.quality === 1 ?
+                            <Button sx={{ ml: 2 }} variant="contained" onClick={() => handleViewTask("D0004")}>View</Button>
+                            :
+                            <Button sx={{ ml: 2 }} variant="contained" onClick={() => handleViewTask("D0004")} disabled>View</Button>
+                        }
+
                       </Box>
                     </Grid>
                     <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
@@ -2234,6 +3056,12 @@ const MasterReportDetail = (props) => {
                             <Badge status="error" text="Pending" />
                           </>
                         )}
+                        {ECRTaskStatus.purchase === 1 ?
+                          <Button sx={{ ml: 3.5 }} variant="contained" onClick={() => handleViewTask("D0005")}>View</Button>
+                          :
+                          <Button sx={{ ml: 3.5 }} variant="contained" onClick={() => handleViewTask("D0005")} disabled>View</Button>
+                        }
+
                       </Box>
                     </Grid>
                     <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
@@ -2250,6 +3078,13 @@ const MasterReportDetail = (props) => {
                             <Badge status="error" text="Pending" />
                           </>
                         )}
+                        {
+                          ECRTaskStatus.SDE === 1 ?
+                            <Button sx={{ ml: 2, mt: -1 }} variant="contained" onClick={() => handleViewTask("D0006")}>View</Button>
+                            :
+                            <Button sx={{ ml: 2, mt: -1 }} variant="contained" onClick={() => handleViewTask("D0006")} disabled>View</Button>
+                        }
+
                       </Box>
                     </Grid>
                   </Grid>
@@ -2268,6 +3103,13 @@ const MasterReportDetail = (props) => {
                             <Badge status="error" text="Pending" />
                           </>
                         )}
+                        {
+                          ECRTaskStatus.manufacturing === 1 ?
+                            <Button sx={{ ml: 4 }} variant="contained" onClick={() => handleViewTask("D0001")}>View</Button>
+                            :
+                            <Button sx={{ ml: 4 }} variant="contained" onClick={() => handleViewTask("D0001")} disabled>View</Button>
+                        }
+
                       </Box>
                     </Grid>
                     <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
@@ -2284,6 +3126,13 @@ const MasterReportDetail = (props) => {
                             <Badge status="error" text="Pending" />
                           </>
                         )}
+                        {
+                          ECRTaskStatus.production === 1 ?
+                            <Button sx={{ ml: 2 }} variant="contained" onClick={() => handleViewTask("D0003")}>View</Button>
+                            :
+                            <Button sx={{ ml: 2 }} variant="contained" onClick={() => handleViewTask("D0003")} disabled>View</Button>
+                        }
+
                       </Box>
                     </Grid>
                     <Grid iitem xl={3} lg={3} md={3} sm={12} xs={12}>
@@ -2300,6 +3149,13 @@ const MasterReportDetail = (props) => {
                             <Badge status="error" text="Pending" />
                           </>
                         )}
+                        {
+                          ECRTaskStatus.Program_management === 1 ?
+                            <Button sx={{ ml: 2 }} variant="contained" onClick={() => handleViewTask("D0007")}>View</Button>
+                            :
+                            <Button sx={{ ml: 2 }} variant="contained" onClick={() => handleViewTask("D0007")}>View</Button>
+                        }
+
                       </Box>
                     </Grid>
                   </Grid>
@@ -3131,6 +3987,7 @@ const MasterReportDetail = (props) => {
                                     <FormControlLabel
                                       sx={{ ml: 2, mt: 2 }}
                                       key={data.id}
+                                      disabled={data.picture !== "" && data.status === "retrieve" ? true : false}
                                       control={
                                         <Checkbox
                                           checked={data.check}
@@ -3166,34 +4023,85 @@ const MasterReportDetail = (props) => {
                                 />
                               </td>
                               <td style={{ width: columnWidths[2] }}>
-                                <ReactFileReader
-                                  fileTypes={[
-                                    ".pdf",
-                                    ".docx",
-                                    ".xlsx",
-                                    ".pptx",
-                                  ]}
-                                  disabled={data.check === true ? false : true}
-                                  base64={true}
-                                  multipleFiles={true}
-                                  handleFiles={handleFilesupload(data.id)}
-                                >
-                                  <Button
-                                    disabled={
-                                      data.check === true ? false : true
-                                    }
-                                    variant="contained"
-                                    sx={{
-                                      "&:hover": {
-                                        backgroundColor: "transparent",
-                                        color: "#157DEC",
-                                      },
-                                      mt: 2,
-                                    }}
+                                {Change_Imp !== null && Change_Imp === 0 ?
+                                  <ReactFileReader
+                                    fileTypes={[
+                                      ".pdf",
+                                      ".docx",
+                                      ".xlsx",
+                                      ".pptx",
+                                    ]}
+                                    disabled={data.check === true ? false : true}
+                                    base64={true}
+                                    multipleFiles={true}
+                                    handleFiles={handleFilesupload(data.id)}
                                   >
-                                    Upload
-                                  </Button>
-                                </ReactFileReader>
+                                    <Button
+                                      disabled={
+                                        data.check === true ? false : true
+                                      }
+                                      variant="contained"
+                                      sx={{
+                                        "&:hover": {
+                                          backgroundColor: "transparent",
+                                          color: "#157DEC",
+                                        },
+                                        mt: 2,
+                                      }}
+                                    >
+                                      Upload
+                                    </Button>
+                                  </ReactFileReader>
+                                  : Change_Imp === null ||
+                                    (Change_Imp !== null && Change_Imp === 1) ?
+                                    <ReactFileReader
+                                      fileTypes={[
+                                        ".pdf",
+                                        ".docx",
+                                        ".xlsx",
+                                        ".pptx",
+                                      ]}
+                                      disabled={data.check === true ? false : true}
+                                      base64={true}
+                                      multipleFiles={true}
+                                      handleFiles={handleFilesupload(data.id)}
+                                    >
+                                      <Button
+                                        disabled={
+                                          data.check === true ? false : true
+                                        }
+                                        variant="contained"
+                                        sx={{
+                                          "&:hover": {
+                                            backgroundColor: "transparent",
+                                            color: "#157DEC",
+                                          },
+                                          mt: 2,
+                                        }}
+                                      >
+                                        Upload
+                                      </Button>
+                                    </ReactFileReader>
+                                    : Change_Imp !== null && Change_Imp === 2 ?
+                                      <Base64Downloader
+                                        base64={data.picture}
+                                        downloadName="Download"
+                                        Tag="a"
+                                        extraAttributes={{ href: "#" }}
+                                        className="my-class-name"
+                                        onDownloadSuccess={() =>
+                                          console.log("File download initiated")
+                                        }
+                                        onDownloadError={() =>
+                                          console.warn("Download failed to start")
+                                        }
+                                      >
+                                        <Button variant="contained">
+                                          Download
+                                        </Button>
+                                      </Base64Downloader>
+                                      : ""}
+
                               </td>
                               <td style={{ width: columnWidths[3] }}>
                                 <Grid sx={{ mt: 3 }}>
@@ -3579,7 +4487,7 @@ const MasterReportDetail = (props) => {
                                 <Checkbox
                                   checked={
                                     ecorecfield &&
-                                    ecorecfield.Specific_Cus_Req === 1
+                                      ecorecfield.Specific_Cus_Req === 1
                                       ? 1
                                       : 0
                                   }
@@ -3651,7 +4559,7 @@ const MasterReportDetail = (props) => {
                                 <Checkbox
                                   checked={
                                     ecorecfield &&
-                                    ecorecfield.Specific_Cus_Req === 0
+                                      ecorecfield.Specific_Cus_Req === 0
                                       ? 1
                                       : 0
                                   }
@@ -3700,19 +4608,19 @@ const MasterReportDetail = (props) => {
                                     changeimp === 1
                                       ? "#90EE90"
                                       : changeimp === 2
-                                      ? "#DCDCA0"
-                                      : changeimp === 3
-                                      ? "#f1807e"
-                                      : ecorecfield &&
-                                        ecorecfield.Change_Imp === 2
-                                      ? "#90EE90"
-                                      : ecorecfield &&
-                                        ecorecfield.Change_Imp === 1
-                                      ? "#f1807e"
-                                      : ecorecfield &&
-                                        ecorecfield.Change_Imp === 0
-                                      ? "#DCDCA0"
-                                      : "",
+                                        ? "#DCDCA0"
+                                        : changeimp === 3
+                                          ? "#f1807e"
+                                          : ecorecfield &&
+                                            ecorecfield.Change_Imp === 2
+                                            ? "#90EE90"
+                                            : ecorecfield &&
+                                              ecorecfield.Change_Imp === 1
+                                              ? "#f1807e"
+                                              : ecorecfield &&
+                                                ecorecfield.Change_Imp === 0
+                                                ? "#DCDCA0"
+                                                : "",
                                   fontSize: 14,
                                 }}
                                 label="Select"
@@ -3723,8 +4631,8 @@ const MasterReportDetail = (props) => {
                                       : 1
                                     : ecorecfield &&
                                       ecorecfield.Change_Imp === 0
-                                    ? 2
-                                    : 1
+                                      ? 2
+                                      : 1
                                 }
                                 onChange={(event) => {
                                   SetChangeImp(event.target.value);
@@ -3750,10 +4658,10 @@ const MasterReportDetail = (props) => {
                                     changeimp === 1
                                       ? "#90EE90"
                                       : changeimp === 2
-                                      ? "#DCDCA0"
-                                      : changeimp === 3
-                                      ? "#f1807e"
-                                      : "white",
+                                        ? "#DCDCA0"
+                                        : changeimp === 3
+                                          ? "#f1807e"
+                                          : "white",
                                   fontSize: 14,
                                 }}
                                 label="Select"
@@ -3782,8 +4690,8 @@ const MasterReportDetail = (props) => {
                                       ? "#90EE90"
                                       : ecorecfield &&
                                         ecorecfield.Change_Imp === 0
-                                      ? "#f1807e"
-                                      : "white",
+                                        ? "#f1807e"
+                                        : "white",
                                   fontSize: 14,
                                 }}
                                 // style={{
@@ -3831,14 +4739,14 @@ const MasterReportDetail = (props) => {
                                     timingtar === 1
                                       ? "#90EE90"
                                       : timingtar === 2
-                                      ? "#f1807e"
-                                      : ecorecfield &&
-                                        ecorecfield.Timing_Target === 2
-                                      ? "#f1807e"
-                                      : ecorecfield &&
-                                        ecorecfield.Timing_Target === 1
-                                      ? "#90EE90"
-                                      : "",
+                                        ? "#f1807e"
+                                        : ecorecfield &&
+                                          ecorecfield.Timing_Target === 2
+                                          ? "#f1807e"
+                                          : ecorecfield &&
+                                            ecorecfield.Timing_Target === 1
+                                            ? "#90EE90"
+                                            : "",
                                   fontSize: 14,
                                 }}
                                 label="Select"
@@ -3871,10 +4779,10 @@ const MasterReportDetail = (props) => {
                                     Change_Imp === 1
                                       ? "white"
                                       : timingtar === 1
-                                      ? "#90EE90"
-                                      : timingtar === 2
-                                      ? "#f1807e"
-                                      : "white",
+                                        ? "#90EE90"
+                                        : timingtar === 2
+                                          ? "#f1807e"
+                                          : "white",
                                   fontSize: 14,
                                 }}
                                 label="Select"
@@ -3900,12 +4808,12 @@ const MasterReportDetail = (props) => {
                                   color: "black",
                                   backgroundColor:
                                     ecorecfield &&
-                                    ecorecfield.Timing_Target === 1
+                                      ecorecfield.Timing_Target === 1
                                       ? "#90EE90"
                                       : ecorecfield &&
                                         ecorecfield.Timing_Target === 2
-                                      ? "#f1807e"
-                                      : "white",
+                                        ? "#f1807e"
+                                        : "white",
                                   fontSize: 14,
                                 }}
                                 style={{
@@ -3950,14 +4858,14 @@ const MasterReportDetail = (props) => {
                                     costtar === 1
                                       ? "#90EE90"
                                       : costtar === 2
-                                      ? "#f1807e"
-                                      : ecorecfield &&
-                                        ecorecfield.Cost_Target === 2
-                                      ? "#f1807e"
-                                      : ecorecfield &&
-                                        ecorecfield.Cost_Target === 1
-                                      ? "#90EE90"
-                                      : "",
+                                        ? "#f1807e"
+                                        : ecorecfield &&
+                                          ecorecfield.Cost_Target === 2
+                                          ? "#f1807e"
+                                          : ecorecfield &&
+                                            ecorecfield.Cost_Target === 1
+                                            ? "#90EE90"
+                                            : "",
                                 }}
                                 label="Select"
                                 value={
@@ -3990,8 +4898,8 @@ const MasterReportDetail = (props) => {
                                     costtar === 1
                                       ? "#90EE90"
                                       : costtar === 2
-                                      ? "#f1807e"
-                                      : "white",
+                                        ? "#f1807e"
+                                        : "white",
                                 }}
                                 label="Select"
                                 value={costtar}
@@ -4020,8 +4928,8 @@ const MasterReportDetail = (props) => {
                                       ? "#90EE90"
                                       : ecorecfield &&
                                         ecorecfield.Cost_Target === 2
-                                      ? "#f1807e"
-                                      : "white",
+                                        ? "#f1807e"
+                                        : "white",
                                 }}
                                 style={{
                                   pointerEvents: "none",
@@ -4065,14 +4973,14 @@ const MasterReportDetail = (props) => {
                                     qualitytar === 1
                                       ? "#90EE90"
                                       : qualitytar === 2
-                                      ? "#f1807e"
-                                      : ecorecfield &&
-                                        ecorecfield.Quality_Target === 2
-                                      ? "#f1807e"
-                                      : ecorecfield &&
-                                        ecorecfield.Quality_Target === 1
-                                      ? "#90EE90"
-                                      : "",
+                                        ? "#f1807e"
+                                        : ecorecfield &&
+                                          ecorecfield.Quality_Target === 2
+                                          ? "#f1807e"
+                                          : ecorecfield &&
+                                            ecorecfield.Quality_Target === 1
+                                            ? "#90EE90"
+                                            : "",
                                 }}
                                 label="Select"
                                 value={
@@ -4102,8 +5010,8 @@ const MasterReportDetail = (props) => {
                                     qualitytar === 1
                                       ? "#90EE90"
                                       : qualitytar === 2
-                                      ? "#f1807e"
-                                      : "white",
+                                        ? "#f1807e"
+                                        : "white",
                                 }}
                                 label="Select"
                                 value={qualitytar}
@@ -4126,12 +5034,12 @@ const MasterReportDetail = (props) => {
                                   color: "black",
                                   backgroundColor:
                                     ecorecfield &&
-                                    ecorecfield.Quality_Target === 1
+                                      ecorecfield.Quality_Target === 1
                                       ? "#90EE90"
                                       : ecorecfield &&
                                         ecorecfield.Quality_Target === 2
-                                      ? "#f1807e"
-                                      : "white",
+                                        ? "#f1807e"
+                                        : "white",
                                 }}
                                 style={{
                                   pointerEvents: "none",
@@ -4221,7 +5129,83 @@ const MasterReportDetail = (props) => {
           >
             <Box sx={modalStyle}>
               <Box>
-                <img width={700} src={base64Image} alt="No preview available" />
+                {modalCode === 2 ? (
+                  <img width={700} src={base64Image} alt="No preview available" />
+                ) : (
+                  <div className="row" style={{ display: 'flex', width: '100%' }}>
+                    <div className="col-md-5 col-lg-5 col-xl-5" style={{ width: '80%' }}>
+                      <div style={{ maxHeight: "600px", overflow: "auto" }}>
+                        <table style={{ width: "100%" }}>
+                          <tr>
+                            <th style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px" }} colSpan={2}>
+                              Feasibility Study
+                            </th>
+                          </tr>
+                          {quesobj.map((res) => {
+                            return (
+                              <tr key={res.id}>
+                                <td style={{ width: "40%" }}>
+                                  <p>{res.question}</p>
+                                </td>
+                                <td style={{ width: "10%" }}>
+                                  {res.ans === 1 ? <img src={trueimg} width={"25px"} />
+                                    : res.ans === 0 ? <img src={wrongimg} width={"25px"} />
+                                      : <img src={notapp} width={"30px"} />
+                                  }
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </table>
+                      </div>
+                    </div>
+                    <div className="col-md-47 col-lg-7 col-xl-7" style={{ width: '105%' }}>
+                      <div style={{ maxHeight: "600px", overflow: "auto" }}>
+                        <table style={{ width: "100%" }}>
+                          <tr>
+                            <th style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px" }}>
+                              Risk Assessment
+                            </th>
+                            <th style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px" }}>
+                              Risk Applicable
+
+                            </th>
+                            <th style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px" }}>
+                              Rank
+                            </th>
+                            <th style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px" }}>
+                              Remark
+                            </th>
+                          </tr>
+                          {commondeptobj.map((res) => {
+                            return (
+                              <tr key={res.id}>
+                                <td style={{ width: "40%" }}>
+                                  <p>{res.question}</p>
+                                </td>
+                                <td style={{ width: "5%", textAlign: "center" }}>
+                                  {res.ans === 1 ? <img src={trueimg} width={"25px"} />
+                                    : <img src={wrongimg} width={"25px"} />
+                                  }
+                                </td>
+                                <td style={{ width: "5%", textAlign: "center" }}>
+                                  <Button variant="contained" color={res.ans1 === 0 ? "success" : res.ans1 === 2 ? "error" : "secondary"}>{res.ans1 === 0 ? "LOW" : res.ans1 === 1 ? "MEDIUM" : "HIGH"}</Button>
+                                  {/* <p>{res.ans1}</p> */}
+                                </td>
+                                <td style={{ width: "15%" }}>
+                                  <p style={{ alignItems: "center", justifyContent: "center", display: "flex" }}>{res.ans2}</p>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+
+
+
+                )}
               </Box>
               <Box
                 style={{

@@ -7,8 +7,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const ChangeImpTable = (props) => {
   const {
-    handleCellChangeImptab = () => {},
-    handleDateChangeImptab = () => {},
+    handleCellChangeImptab = () => { },
+    handleDateChangeImptab = () => { },
     ischecked,
     chngeImpdata,
     ChngeImpretdata,
@@ -41,6 +41,7 @@ const ChangeImpTable = (props) => {
   }, [ischecked, ChngeImpretdata]);
 
   const handleCellChange = (key, dataIndex, value, ChngeImpretdata) => {
+    value === false ? (setremarkValue({}), setchampionValue({})) : ""
     handleCellChangeImptab(key, dataIndex, value, ChngeImpretdata);
   };
   const handleDateChange = (key, dataIndex, value, ChngeImpretdata) => {
@@ -102,7 +103,7 @@ const ChangeImpTable = (props) => {
                   backgroundColor: "white",
                   "& .MuiInputBase-input": {
                     height: "10px",
-                    width:"150px",
+                    width: "150px",
                   },
                   pointerEvents: Change_Imp === 2 ? "none" : "",
                 }}
@@ -150,12 +151,12 @@ const ChangeImpTable = (props) => {
       align: "center",
       render: (_, record) => (
         <TextField
-        disabled={record.applicable === true ? false : true}
+          disabled={record.applicable === true ? false : true}
           sx={{
             backgroundColor: "white",
             "& .MuiInputBase-input": {
               height: "2px",
-              width:"150px",
+              width: "150px",
             },
             pointerEvents: Change_Imp === 2 ? "none" : "",
           }}

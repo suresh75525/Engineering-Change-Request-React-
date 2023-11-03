@@ -5,6 +5,7 @@ const initialState = {
     logged_user: null,
     BomUserType : null,
     EcrUserType : null,
+    TaskMstID : null,
   };
   
   const authReducer = (state = initialState, action) => {
@@ -38,6 +39,11 @@ const initialState = {
         return {
           ...state,
           BomUserType: action.payload,
+        };
+        case "TaskMstID":
+        return {
+          ...state,
+          TaskMstID: action.payload,
         };
       default:
         return state;

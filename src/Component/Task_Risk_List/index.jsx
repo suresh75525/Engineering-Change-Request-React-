@@ -3,6 +3,7 @@ import React, { useEffect, useState, useReducer } from "react";
 import { useSelector } from "react-redux";
 import { Skeleton, Table, Tag } from "antd";
 import moment from "moment";
+import { useDispatch } from "react-redux";
 import { Button, Typography } from "@mui/material";
 import api from "../../Page/config";
 import { INITIAL_STATE, postReducer } from "../../reducers/postReducer";
@@ -22,6 +23,7 @@ const RequestList = (props) => {
     newreq,
     isNewRequest,
   } = props;
+  const dispatch = useDispatch();
   const store = useSelector((state) => state.auth);
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
 
@@ -292,6 +294,10 @@ const RequestList = (props) => {
     setMstDtl(mstdtldata);
     settabDataRender(false);
     listDisplayTable(true);
+    dispatch({
+      type: "TaskMstID",
+      payload: row.ID,
+    });
     setMasterId(row.ID);
   };
 

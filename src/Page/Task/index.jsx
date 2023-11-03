@@ -40,7 +40,7 @@ const Item = styled(Paper)(({ theme }) => ({
 const AssignedTask = (props) => {
   const store = useSelector((state) => state.auth);
   const logged_dept = store.logged_dept;
-
+  const decryptedDept = store.Dept_logged;
   const [finalStatus, setFinalStatus] = useState("");
   const [masterId, setMasterId] = useState("");
   const [mstdtl, setMstDtl] = useState([]);
@@ -425,6 +425,7 @@ const AssignedTask = (props) => {
     formdata.append("alternateOption", alternateOption);
     formdata.append("mstID", masterId);
     formdata.append("dept", logged_dept);
+    formdata.append("deptCode",decryptedDept)
     await api
       .post("api/insertRiskFeasibleDetails", formdata, {
         "Content-Type": "text/plain",
@@ -449,6 +450,7 @@ const AssignedTask = (props) => {
           setEmptyAssesmentData(true);
           setListDisplay2(false);
           setAlternateOption("");
+          handleBack();
           toast.success("Request Submitted Successfuly!", {
             position: toast.POSITION.BOTTOM_RIGHT,
           });

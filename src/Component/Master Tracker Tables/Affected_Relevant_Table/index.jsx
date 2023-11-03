@@ -16,9 +16,9 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const AffectedTable = (props) => {
   const {
-    AffTabhandleCellChange = () => {},
-    AffTabhandleDateChange = () => {},
-    AfftabRetrRec = () => {},
+    AffTabhandleCellChange = () => { },
+    AffTabhandleDateChange = () => { },
+    AfftabRetrRec = () => { },
     AffTabledata,
     ischecked,
     affretdata,
@@ -39,6 +39,7 @@ const AffectedTable = (props) => {
   ];
 
   const handleCellChange = (key, dataIndex, value) => {
+    value === false ? (setchampionValue({}), setfunctionValue({}),  setremarkValue({})) : "";
     AffTabhandleCellChange(key, dataIndex, value, affretdata);
   };
 
@@ -72,7 +73,7 @@ const AffectedTable = (props) => {
             }));
             setfunctionValue((prevValues) => ({
               ...prevValues,
-              [j]: data.Function,
+              [j]: data.Func,
             }));
             setremarkValue((prevValues) => ({
               ...prevValues,
@@ -189,10 +190,11 @@ const AffectedTable = (props) => {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DesktopDatePicker
             required
+            defaultValue={null}
             disabled={record.applicable === true ? false : true}
             inputFormat="DD/MM/YYYY"
             disablePast={false}
-            value={record.targetDate}
+            value={record.targetDate || null}
             onChange={(date) =>
               handleDateChange(record.key, "targetDate", date)
             }
@@ -207,6 +209,7 @@ const AffectedTable = (props) => {
                   pointerEvents: Change_Imp === 2 ? "none" : "",
                 }}
                 {...params}
+                placeholder="DD/MM/YYYY"
               />
             )}
           />
@@ -239,6 +242,7 @@ const AffectedTable = (props) => {
                     minWidth: 100,
                   },
                   pointerEvents: Change_Imp === 2 ? "none" : "",
+                  border: "none",
                 }}
                 {...params}
                 placeholder="DD/MM/YYYY"

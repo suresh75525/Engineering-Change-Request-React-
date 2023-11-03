@@ -30,6 +30,7 @@ import { INITIAL_STATE, postReducer } from "../../reducers/postReducer";
 import { ACTION_TYPES } from "../../reducers/postActionType";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { app_style } from "./style";
 import api from "../config";
@@ -49,7 +50,7 @@ const Item = styled(Paper)(({ theme }) => ({
 const ECR = () => {
   const store = useSelector((state) => state.auth);
   const decrypted = store.emp_logged;
-
+  const decryptedDept = store.Dept_logged;
   const newDate = new Date();
   const cookies = new Cookies();
 
@@ -308,7 +309,7 @@ const ECR = () => {
             formdata.append("empProgram", empProgram);
             formdata.append("created", decrypted);
             formdata.append("empName", empName);
-            formdata.append("dptName", dptCode);
+            formdata.append("dptName", decryptedDept);
 
             await api
               .post("api/insertEcrRequestDetails", formdata, {
@@ -800,7 +801,7 @@ const ECR = () => {
                         value={beforepic}
                         handleFiles={handleFilesBefore}
                       >
-                        <Button variant="contained" sx={{ m: 1 }}>
+                        <Button variant="contained" sx={{ m: 1 }} startIcon={<CloudUploadIcon />}>
                           Upload
                         </Button>
                       </ReactFileReader>
@@ -828,7 +829,7 @@ const ECR = () => {
                         value={afterpic}
                         handleFiles={handleFilesAfter}
                       >
-                        <Button variant="contained" sx={{ m: 1 }}>
+                        <Button variant="contained" sx={{ m: 1 }} startIcon={<CloudUploadIcon />}>
                           Upload
                         </Button>
                       </ReactFileReader>
